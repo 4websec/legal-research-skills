@@ -1,7 +1,7 @@
 # Legal research skills for Claude Code
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-5-brightgreen.svg)](#contents)
+![Skills](https://img.shields.io/badge/skills-5-brightgreen.svg)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skills-8A63D2.svg)](https://docs.claude.com/en/docs/claude-code/skills)
 ![Companion](https://img.shields.io/badge/companion-private%20repo-lightgrey.svg)
 
