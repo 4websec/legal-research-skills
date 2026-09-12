@@ -1,0 +1,85 @@
+#!/bin/sh
+# Public repo guard. Everything here is BLOCKING.
+#
+# Hooks are NOT cloned - reinstall with:
+#   cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# This is the public counterpart of the private skills repo's hook. The private
+# one WARNS on personal data because a private remote leaves room to fix a
+# mistake. Here a bad commit is published the moment it is pushed, and rewriting
+# public history does not un-publish it. So every check below exits non-zero.
+#
+# What this repo must never contain, and why:
+#   - operator identity      the account username was deliberately replaced with
+#                            $WESTLAW_USER; it must not come back
+#   - matter identifiers     party names and cause numbers from live litigation
+#   - licensed treatise text the verbatim Dorsaneo/Matthew Bender content lives
+#                            in the private repo under a no-redistribution licence
+#   - absolute home paths    leak the operator's username and break portability
+
+fail=0
+
+# This file is excluded from the content scan because it necessarily CONTAINS
+# every pattern it searches for - the party names, the cause numbers, the
+# username. Without the exclusion the guard blocks its own commit and can never
+# be updated. The trade-off is that a secret pasted into this file would not be
+# caught here; it is a short reviewed shell script, so that is acceptable.
+# Path-based checks below still cover every file, this one included.
+added=$(git diff --cached -U0 --diff-filter=ACM -- . ':(exclude)hooks/pre-commit' \
+    | grep '^+' | grep -v '^+++')
+paths=$(git diff --cached --name-only --diff-filter=ACM)
+
+report() {
+    echo "BLOCKED: $1" >&2
+    fail=1
+}
+
+# --- secrets ---
+printf '%s\n' "$added" | grep -qE 'pcsk_[A-Za-z0-9]{24,}' \
+    && report "Pinecone-style key literal"
+printf '%s\n' "$added" | grep -qE 'sk-[A-Za-z0-9_-]{24,}' \
+    && report "sk- style API key literal"
+printf '%s\n' "$added" | grep -qE '"[A-Z][A-Z0-9_]*(TOKEN|KEY|SECRET|PASSWORD)"[[:space:]]*:[[:space:]]*"[^$"][^"]{19,}"' \
+    && report "config key assigned a literal secret; use \${VAR}"
+printf '%s\n' "$added" | grep -qiE '(token|key|secret|auth)"?[[:space:]]*[:=][[:space:]]*"?[0-9a-f]{40}' \
+    && report "40-char hex assigned to a credential key"
+printf '%s\n' "$added" | grep -qE "WESTLAW_PW['\"]?[[:space:]]*[,=:][[:space:]]*['\"][^<\$]" \
+    && report "literal value next to WESTLAW_PW"
+
+# --- operator identity: sanitized out on publication, must not return ---
+printf '%s\n' "$added" | grep -qE 'landonmayo[0-9]*' \
+    && report "account username literal; use \$WESTLAW_USER"
+printf '%s\n' "$added" | grep -qE 'C:.Users.lando' \
+    && report "absolute home path; use %USERPROFILE% or ~"
+
+# --- matter identifiers from live litigation ---
+hits=$(printf '%s\n' "$added" \
+    | grep -oiE '\b(Cazort|Hoek|Schlag)\b|\b(1268936|512642|202540153)\b|\b[0-9]{4}-[0-9]{5}\b' \
+    | sort -u)
+if [ -n "$hits" ]; then
+    report "matter identifier (party name or cause number) in a public repo"
+    printf '  %s\n' $hits >&2
+fi
+
+# --- private skills must not be copied into this repo ---
+printf '%s\n' "$paths" \
+    | grep -qE '^(texas-bill-of-review|add-evidence|case-status|docket-refresh)/' \
+    && report "private skill path staged; it belongs in the private repo"
+
+# --- licensed treatise text, best-effort ---
+# The private repo's doctrine skill carries ~334 blockquote lines of verbatim
+# Matthew Bender text. A large new run of blockquotes here is the shape that
+# would repeat that mistake, so it is worth a stop even though the heuristic is
+# crude. Prose quoting a holding is short; a treatise dump is not.
+quoted=$(printf '%s\n' "$added" | grep -cE '^\+>')
+if [ "$quoted" -gt 40 ]; then
+    report "$quoted new blockquote lines - check this is not verbatim treatise text"
+fi
+
+if [ "$fail" -ne 0 ]; then
+    echo "" >&2
+    echo "This repo is PUBLIC. See README.md." >&2
+    echo "If a block is a false positive, commit with --no-verify deliberately." >&2
+    exit 1
+fi
+exit 0

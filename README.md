@@ -22,6 +22,19 @@ cp -r legal-research-skills/*/ ~/.claude/skills/
 
 Claude Code auto-discovers them on next start. Each skill announces itself when it fires.
 
+### If you are committing to this repo
+
+Install the guard first — **git does not clone hooks**:
+
+```bash
+cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+It blocks API-key literals, absolute home paths, and the party names and cause numbers of the
+live matter these skills were built for, plus any large run of new blockquotes that might be
+verbatim treatise text. Every check exits non-zero rather than warning: this repo is public, and
+rewriting history does not un-publish a bad commit.
+
 ---
 
 ## Contents
