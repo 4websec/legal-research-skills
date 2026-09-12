@@ -1,6 +1,6 @@
 ---
 name: knowledgebase
-description: The local knowledgebase of books, treatises, and practice guides already read, with a machine-readable map. Use BEFORE any external research — case law, statutes, treatises, web — to check what is already captured, and AFTER any substantive read to write the knowledge back so it persists across projects. Triggers on "what do we know about", "have we read", "already researched", "check the knowledgebase", "save this book", "add to knowledgebase", treatise, practice guide, Dorsaneo, Matthew Bender, secondary source, doctrine lookup, and on starting any legal or technical research task.
+description: The local knowledgebase of books, treatises, and practice guides already read, with a machine-readable map. Use to check whether something has already been captured before paying for an external lookup, and after any substantive treatise read to write the knowledge back so it persists across projects. Triggers on "what do we know about", "have we read", "already researched", "check the knowledgebase", "save this book", "add to knowledgebase", "what treatises do we have", treatise, practice guide, secondary source, Dorsaneo, Matthew Bender, and on any doctrine question a practice guide would answer faster than case law. The sibling research skills (fastcase-research, westlaw-research, verify-legal-authority) each invoke this protocol themselves, so this skill does not need to fire on every research task.
 ---
 
 Announce: `"I'm using the knowledgebase skill."`
