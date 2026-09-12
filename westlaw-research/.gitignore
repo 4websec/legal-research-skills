@@ -1,0 +1,6 @@
+# Never commit secrets or browser session state from this skill
+.env
+*.env
+browser_state/
+*credentials*
+*secret*
