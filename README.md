@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-5-brightgreen.svg)](#contents)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skills-8A63D2.svg)](https://docs.claude.com/en/docs/claude-code/skills)
-[![Companion](https://img.shields.io/badge/companion-private%20repo-lightgrey.svg)](#what-is-deliberately-not-here)
+![Companion](https://img.shields.io/badge/companion-private%20repo-lightgrey.svg)
 
 Five [Claude Code skills](https://docs.claude.com/en/docs/claude-code/skills) covering
 **legal research platform access, citation verification, and treatise extraction** — the
